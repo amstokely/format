@@ -6,7 +6,6 @@ using namespace boost::ut::bdd;
 
 int main() {
     "Tokens"_test = [] {
-
         given("an empty Tokens container") = [] {
             Tokens t;
 
@@ -14,10 +13,17 @@ int main() {
                 expect(t.empty());
                 expect(t.size() == 0_u);
             };
+            then("checking if it contains a token") = [&] {
+                expect(!t.contains_token("foo"));
+            };
 
             then("first_token_is returns false") = [&] {
                 expect(!t.first_token_is("foo"));
             };
+            then("contains_token_sequence longer than size returns false") = [&] {
+                expect(!t.contains_token_sequence<std::vector<std::string> >({"foo", "bar"}));
+            };
+
 
             when("a token is added") = [&] {
                 t.push_back(Token{TokenKind::Keyword, "program"});
@@ -26,6 +32,7 @@ int main() {
                     expect(!t.empty());
                     expect(t.size() == 1_u);
                 };
+
 
                 then("front and back both refer to the same token") = [&] {
                     expect(t.front().text == "program");
@@ -84,8 +91,7 @@ int main() {
 
                     then("iteration yields tokens in the correct order") = [&] {
                         std::vector<std::string> texts;
-                        for (auto &tk : t)
-                            texts.push_back(std::string(tk.text));
+                        for (auto &tk: t) texts.push_back(std::string(tk.text));
 
                         expect(texts.size() == 2_u);
                         expect(texts[0] == "program");
@@ -95,4 +101,4 @@ int main() {
             };
         };
     };
-}
+};

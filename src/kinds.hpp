@@ -43,5 +43,23 @@ enum class NodeKind {
     EndType
 };
 
-
+enum class TokenKind : uint8_t {
+    Identifier,
+    Keyword,
+    Number,
+    Operator,
+    Comma,
+    Colon,
+    Semicolon,
+    LParen,
+    RParen,
+    Percent,
+    StringLiteral,
+    Comment,
+    Continuation,
+    Whitespace,
+    Newline,
+    EndOfFile,
+    Unknown
+};
 #endif //FORMAT_KINDS_HPP

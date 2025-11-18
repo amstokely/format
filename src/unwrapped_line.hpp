@@ -40,7 +40,6 @@ public:
                     skip_next_newline = false;
                     continue;
                 }
-                skip_next_newline = false;
             }
 
             if (is_continuation_pair(cur, next)) {

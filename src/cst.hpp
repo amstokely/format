@@ -10,9 +10,6 @@
 
 using StringVector = std::vector<std::string>;
 
-// ============================================================================
-// NodeKind: Classification of lines for CST building
-// ============================================================================
 
 
 inline bool starts_with_keyword(const UnwrappedLine &line, std::string_view kw) {
@@ -37,9 +34,6 @@ inline bool is_assignment(const UnwrappedLine &line) {
     return line.tokens.contains_token("=");
 }
 
-// ============================================================================
-// TYPE / CLASS construct detection
-// ============================================================================
 
 inline bool is_type_construct(const UnwrappedLine &line) {
     if (line.tokens.empty()) return false;
@@ -48,10 +42,6 @@ inline bool is_type_construct(const UnwrappedLine &line) {
     }
     return false;
 }
-
-// ============================================================================
-// END <construct> detection
-// ============================================================================
 
 inline NodeKind classify_end_construct(const UnwrappedLine &line) {
     if (line.tokens.empty()) return NodeKind::Unknown;
@@ -75,10 +65,6 @@ inline NodeKind classify_end_construct(const UnwrappedLine &line) {
 
     return NodeKind::Unknown;
 }
-
-// ============================================================================
-// classify() – central logic
-// ============================================================================
 
 inline NodeKind classify(const UnwrappedLine &line) {
     using K = TokenKind;
@@ -115,47 +101,37 @@ inline NodeKind classify(const UnwrappedLine &line) {
         if (t0.text == "interface") return NodeKind::Interface;
         if (t0.text == "do") return NodeKind::Do;
 
-        // print behaves like CALL for formatting
         if (t0.text == "print") return NodeKind::Call;
 
-        // FUNCTION / SUBROUTINE anywhere in line
         if (line.tokens.contains_token("function")) return NodeKind::Function;
 
         if (line.tokens.contains_token("subroutine")) return NodeKind::Subroutine;
 
-        // IF / IF THEN
         if (t0.text == "if") {
             return line.tokens.contains_token("then") ? NodeKind::IfConstruct : NodeKind::If;
         }
 
-        // ELSE / ELSE IF
         if (t0.text == "else") {
             if (line.tokens.size() > 1 && line.tokens[1].text == "if") return NodeKind::ElseIf;
             return NodeKind::Else;
         }
     }
 
-    // Declarations
     if (is_fortran_declaration(line)) return NodeKind::Declaration;
 
-    // Assignments
     if (is_assignment(line)) return NodeKind::Assignment;
 
     return NodeKind::Unknown;
 }
 
-// ============================================================================
-// build_cst()
-// ============================================================================
-
 inline std::vector<CSTNode>
 build_cst(const std::vector<UnwrappedLine> &lines,
           CSTVisitor* visitor = nullptr)
 {
-    std::vector<CSTNode> ast;
-    ast.reserve(lines.size());
+    std::vector<CSTNode> cst;
+    cst.reserve(lines.size());
 
-    NodeKind last_real = NodeKind::Unknown;
+    auto last_real = NodeKind::Unknown;
 
     for (const auto &line: lines) {
         CSTNode node;
@@ -169,10 +145,10 @@ build_cst(const std::vector<UnwrappedLine> &lines,
 
         if (visitor) visitor->on_node(node);
 
-        ast.push_back(node);
+        cst.push_back(node);
     }
 
-    return ast;
+    return cst;
 }
 
 #endif // FORMAT_CST_HPP

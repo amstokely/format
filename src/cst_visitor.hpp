@@ -1,6 +1,5 @@
 #ifndef FORMAT_CST_VISITOR_HPP
 #define FORMAT_CST_VISITOR_HPP
-#include <iostream>
 
 #include "cst_node.hpp"
 #include "kinds.hpp"
@@ -19,7 +18,7 @@ struct BlockNode {
     std::shared_ptr<CSTNode> begin_node;
     std::shared_ptr<CSTNode> end_node;
     BlockNode* parent{nullptr};
-    std::vector<std::unique_ptr<BlockNode>> children;
+    std::vector<std::unique_ptr<BlockNode>> children{};
 };
 
 struct BlockTreeBuilder : public CSTVisitor {
@@ -50,7 +49,6 @@ struct BlockTreeBuilder : public CSTVisitor {
     void on_node(const CSTNode& node) override {
         using NK = NodeKind;
 
-        // -------- begin block --------
         if (begins_block(node.kind)) {
             if (!current->begin_node) {
                 current->begin_node = std::make_shared<CSTNode>(node);
@@ -65,7 +63,6 @@ struct BlockTreeBuilder : public CSTVisitor {
             on_enter(node);
         }
 
-        // -------- end block --------
         else if (ends_block(node.kind)) {
             if (!current->end_node) {
                 current->end_node = std::make_shared<CSTNode>(node);

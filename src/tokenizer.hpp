@@ -3,38 +3,19 @@
 #include <string_view>
 #include <vector>
 #include <array>
-#include <cctype>
+#include "kinds.hpp"
 #include <algorithm>
 
 // ============================================================
 // Token Definitions
 // ============================================================
 
-enum class TokenKind : uint8_t {
-    Identifier,
-    Keyword,
-    Number,
-    Operator,
-    Comma,
-    Colon,
-    Semicolon,
-    LParen,
-    RParen,
-    Percent,
-    StringLiteral,
-    Comment,
-    Continuation,
-    Whitespace,
-    Newline,
-    EndOfFile,
-    Unknown
-};
 
 struct Token {
     TokenKind kind;
     std::string text;
-    int line;
-    int column;
+    int line{};
+    int column{};
 };
 
 // ============================================================
